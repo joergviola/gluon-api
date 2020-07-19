@@ -69,7 +69,10 @@ const storage = {
 }
 
 const theAPI = {
-  user: function() {
+  user: function(newUser=null) {
+    if (newUser) {
+      storage.set('user', newUser)
+    }
     return storage.get('user')
   },
   userCan: function(type, actions) {
