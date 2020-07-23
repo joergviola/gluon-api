@@ -6,17 +6,17 @@ const host = window.location.hostname === 'localhost'
 
 const base = host + '/api/v1.0'
 
-function callDirect(url, options) {
+function callDirect(url, request, options) {
   const user = theAPI.user()
   if (user) {
-    options.headers['Authorization'] = 'Bearer ' + user.token
+    request.headers['Authorization'] = 'Bearer ' + user.token
   }
 
-  return fetch(base + url, options)
+  return fetch(base + url, request)
     .then(response => {
       if (response.status == 200) {
         return response.json()
-      } else if (response.status == 401) {
+      } else if (response.status == 401 && !options.noauthrouting) {
         storage.remove('user')
         router.go('/')
       } else {
@@ -33,7 +33,7 @@ function callDirect(url, options) {
     })
 }
 
-function call(method, url, data) {
+function call(method, url, data, options={}) {
   const headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
@@ -46,8 +46,8 @@ function call(method, url, data) {
     headers: headers,
     redirect: 'follow', // manual, *follow, error
     referrer: 'no-referrer', // no-referrer, *client
-    body: JSON.stringify(data) // body data type must match "Content-Type" header
-  })
+    body: data ? JSON.stringify(data) : null // body data type must match "Content-Type" header
+  }, options)
 }
 
 const storage = {
@@ -87,6 +87,14 @@ const theAPI = {
         storage.set('user', user)
         return user
       })
+  },
+  checkLogin: function() {
+    return call('GET', '/checkLogin', null, {noauthrouting: true})
+      .then(user => {
+        storage.set('user', user)
+        return user
+      })
+      .catch(error => null)
   },
   logout: function() {
     storage.remove('user')
