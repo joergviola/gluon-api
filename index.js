@@ -110,8 +110,14 @@ const theAPI = {
     if (result.length === 0) return null
     return result[0]
   },
+  all: function(type) {
+    return call('GET', '/' + type)
+  },
   get: function(type, id) {
     return call('GET', '/' + type + '/' + id)
+  },
+  getReference: function(type, id, reference) {
+    return call('GET', `/${type}/${id}/${reference}`)
   },
   create: function(type, item) {
     return call('POST', '/' + type, item)
