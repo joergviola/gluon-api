@@ -1,8 +1,7 @@
 import router from '@/router'
 
 const host = window.location.hostname === 'localhost'
-//  ? 'http://localhost/gluon-sample/public'
-  ? 'http://localhost/fer-app/public'
+  ? 'http://localhost/gluon-sample/public'
   : window.location.origin + window.location.pathname + '/../..'
 
 const base = host + '/api/v1.0'
