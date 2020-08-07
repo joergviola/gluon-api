@@ -1,7 +1,8 @@
-import router from '@/router'
+//import router from '@/router'
 
 const host = window.location.hostname === 'localhost'
-  ? 'http://localhost/gluon-project/public'
+//  ? 'http://localhost/gluon-project/public'
+  ? 'http://localhost/fer-app/public'
   : window.location.origin + window.location.pathname + '/../..'
 
 const base = host + '/api/v1.0'
@@ -18,7 +19,7 @@ function callDirect(url, request, options) {
         return response.json()
       } else if (response.status == 401 && !options.noauthrouting) {
         storage.remove('user')
-        router.go('/')
+        // router.go('/')
       } else {
         return response.json().then(r => {
           throw {
@@ -94,7 +95,9 @@ const theAPI = {
         storage.set('user', user)
         return user
       })
-      .catch(error => null)
+      .catch(error => {
+        storage.remove('user')
+      })
   },
   logout: function() {
     storage.remove('user')
