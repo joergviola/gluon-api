@@ -17,7 +17,6 @@ function callDirect(url, request, options) {
     : stdHost
 
   const base = host + '/api/v1.0'
-  console.log('base', base)
 
   return fetch(base + url, request)
     .then(response => {
@@ -25,16 +24,19 @@ function callDirect(url, request, options) {
         return response.json()
       } else if (response.status == 401 && !options.noauthrouting) {
         storage.remove('user')
+        if (theAPI.onAccessDenied) theAPI.onAccessDenied()
         // router.go('/')
       } else {
         return response.json().then(r => {
-          throw {
+          const error = {
             status: {
               code: response.status,
               text: response.statusText
             },
             message: r.message
           }
+          if (theAPI.onError) theAPI.onError(error)
+          else throw error
         })
       }
     })
@@ -77,6 +79,8 @@ const storage = {
 
 const theAPI = {
   localHost: null,
+  onAccessDenied: null,
+  onError: null,
   user: function(newUser=null) {
     if (newUser) {
       storage.set('user', newUser)
