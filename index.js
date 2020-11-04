@@ -1,17 +1,23 @@
 //import router from '@/router'
 
-const host = window.location.hostname === 'localhost'
-//  ? 'http://localhost/gluon-project/public'
-  ? 'http://localhost/fer-app/public'
-  : window.location.origin + window.location.pathname + '/../..'
+// const stdHost = window.location.hostname === 'localhost'
+//   ? 'http://localhost/gluon-project/public'
+// //  ? 'http://localhost/fer-app/public'
 
-const base = host + '/api/v1.0'
+const stdHost = window.location.origin + window.location.pathname + '/../..'
 
 function callDirect(url, request, options) {
   const user = theAPI.user()
   if (user) {
     request.headers['Authorization'] = 'Bearer ' + user.token
   }
+
+  const host = window.location.hostname === 'localhost' && theAPI.localHost
+    ? theAPI.localHost
+    : stdHost
+
+  const base = host + '/api/v1.0'
+  console.log('base', base)
 
   return fetch(base + url, request)
     .then(response => {
@@ -70,6 +76,7 @@ const storage = {
 }
 
 const theAPI = {
+  localHost: null,
   user: function(newUser=null) {
     if (newUser) {
       storage.set('user', newUser)
